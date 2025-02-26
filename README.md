@@ -131,4 +131,3 @@ If you find this work useful, please cite it:
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 ```
-# intelligence
