@@ -1,6 +1,12 @@
 # Intelligence at the Edge of Chaos
 
-This repository this the official repo for the paper "Intelligence at the Edge of Chaos"
+[![DOI:10.48550/arXiv.2410.02536](https://img.shields.io/badge/DOI-10.48550/arXiv.2410.02536-B31B1B.svg)](https://doi.org/10.48550/arXiv.2410.02536)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Code License: GPL-3.0](https://img.shields.io/badge/License-GPLv3-lightgrey.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+This is our implementation for our ICLR 2025 paper, [Intelligence at the Edge of Chaos](https://arxiv.org/abs/2410.02536). We explore how the complexity of rule-based systems, specifically elementary cellular automata (ECA), influences the intelligence of Large Language Models (LLMs) trained on their outputs. Our approach involved training LLMs on ECA patterns, which vary from simple to chaotic, and evaluating their performance on tasks like reasoning and chess prediction. The findings reveal that LLMs trained on complex ECAs perform exceptionally well, while those trained on uniform, periodic, or chaotic patterns struggle. This suggests an optimal level of complexity is crucial for fostering intelligent behavior. Our work proposes that exposure to structured complexity is a key driver in developing advanced artificial cognition.
+
+For more information, please refer to the [manuscript](https://arxiv.org/abs/2410.02536).  
 
 ![Complexity Analysis](complexity_fig1_v5.png)
 
