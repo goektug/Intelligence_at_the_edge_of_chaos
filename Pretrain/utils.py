@@ -32,48 +32,139 @@ def get_lr_scheduler(optimizer, warmup_steps, total_steps, decrease_mode='cosin'
 
     return LambdaLR(optimizer, lr_lambda=lr_lambda)
 
+#initialize the cellular automaton
 
-def cellular_automaton(rule, width=100, init='random', steps=100, k=1):
+p = float(0.5 + (1 / (2 * np.sqrt(2))))
+width = 1000
+c = np.zeros([width, width], dtype = "uint8")
+for x in range(width):
+    for y in range(width):
+        c[x, y] = 1 if random.random() < p else 0     
+nc = np.zeros([width, width], dtype = "uint8")
+
+
+def number_of_upper_neighbors(x, y):
+    upper_count = 0
+    c = np.zeros([width, width], dtype = "uint8")
+    for dx in range(-1, 2):
+        upper_count += c[(x + dx) % width, (y + 1) % width]
+        # print upper_count
+    return upper_count
+
+# count of lower neighbors of a live cell's Moore neighborhood
+
+
+def number_of_lower_neighbors(x, y):
+    lower_count = 0
+    c = np.zeros([width, width], dtype = "uint8")
+    for dx in range(-1, 2):
+        lower_count += c[(x + dx) % width, (y - 1) % width]
+        # print lower_count
+    return lower_count
+
+# count of right neighbors of a live cell's Moore neighborhood
+
+
+def number_of_right_neighbors(x, y):
+    right_count = 0
+    c = np.zeros([width, width], dtype = "uint8")
+    for dy in range(-1, 2):
+        right_count += c[(x + 1) % width, (y + dy) % width]
+        # print right_count
+    return right_count
+
+# count of left neighbors of a live cell's Moore neighborhood
+
+
+def number_of_left_neighbors(x, y):
+    left_count = 0
+    c = np.zeros([width, width], dtype = "uint8")
+    for dy in range(-1, 2):
+        left_count += c[(x - 1) % width, (y + dy) % width]
+        # print left_count
+    return left_count
+
+# count of von Neumann neighbors of a live cell
+
+
+def number_of_Neumann_neighbors(x, y):
+    Vertical_count = 0
+    Horizontal_count = 0
+    c = np.zeros([width, width], dtype = "uint8")
+    for dy in range(-1, 2):
+        Vertical_count += c[x, (y + dy) % width]
+        # print Vertical_count
+    for dx in range(-1, 2):
+        Horizontal_count += c[(x + dx) % width, y]
+        # print Horizontal_count
+    return Vertical_count + Horizontal_count - c[x, y]
+
+# count of Moore neighbors of an alive cell
+
+
+def number_of_Moore_neighbors(x, y):
+    Moore_count = 0
+    c = np.zeros([width, width], dtype = "uint8")
+    for dx in range(-1, 2):
+        for dy in range(-1, 2):
+            Moore_count += c[(x + dx) % width, (y + dy) % width]
+            # print Moore_count
+    return Moore_count - c[x, y]
+
+
+def cellular_automaton(rule, width=1000, init='random', steps=100, k=1):
     """
-    Simulates an elementary cellular automaton.
+    Simulates a cellular automaton.
 
     Parameters:
-    rule (int): The rule number (0-255).
     width (int): The width of the domain (number of cells). Default is 100.
-    init (str or list): Initialization method ('random', 'zeros', 'ones', or a list). Default is 'random'.
-    steps (int): Number of time steps to simulate. Default is 100.
-    k (int): Interval for outputting time points. Default is 1 (every time point).
 
     Returns:
     list: A list of states at specified time intervals.
     """
-    rule_bin = np.array([int(x) for x in np.binary_repr(rule, width=8)], dtype=np.uint8)
-    if init == 'random':
-        state = np.random.randint(2, size=width)
-    elif init == 'zeros':
-        state = np.zeros(width, dtype=np.uint8)
-    elif init == 'ones':
-        state = np.ones(width, dtype=np.uint8)
-    elif isinstance(init, list) and len(init) == width:
-        state = np.array(init, dtype=np.uint8)
-    else:
-        raise ValueError("Invalid initialization method")
+    global c, nc, p
+    array0 = []
+    array1 = []
+    for x in range(width):
+        for y in range(width):
+            g = number_of_Moore_neighbors(x, y)
+            if c[x, y] == 0:
+                nc[x, y] = 0 if g <= 6 else 1
+                array0.append(c[x, y])
+            elif c[x, y] == 1:
+                array1.append(c[x, y]) 
+                for z in range(-1, 2):
+                    # block generation from randomly distributed points
+                    m = number_of_upper_neighbors(x, y)
+                    if m == 1:
+                        nc[x, (y + 1) % width] = 1
 
-    states = [state.copy()]
-    for _ in range(steps):
-        new_state = np.zeros(width, dtype=np.uint8)
-        for i in range(width):
-            left = state[(i - 1) % width]
-            center = state[i]
-            right = state[(i + 1) % width]
-            neighborhood = (left << 2) | (center << 1) | right
-            new_state[i] = rule_bin[7 - neighborhood]
-        state = new_state.copy()
-        if (_ + 1) % k == 0:
-            states.append(state.copy())
+                    n = number_of_lower_neighbors(x, y)
+                    if n == 1:
+                        nc[x, (y - 1) % width] = 1
 
+                    o = number_of_right_neighbors(x, y)
+                    if o == 0 and (m <= 1 or n <= 1):
+                        nc[(x + 1) % width, (y + z) % width] = 1
+                        
+                    l = number_of_left_neighbors(x, y)
+                    if l == 1 and (m > 1 or n > 1):
+                        nc[(x - 1) % width, (y + z) % width] = 0
+
+                    h = number_of_Neumann_neighbors(x, y)
+                    if h >= 1:
+                        nc[x, y] = 1 if g <= 6 else 0
+
+                    if g / 8 > (1-p) * p: 
+                        nc[(x + 1) % width, y] = 1
+                    elif g / 8 < (1-p) * p:
+                        nc[(x - 1) % width, y] = 1
+                    else:
+                        nc[x, y] = 1
+    print(len(array1))
+    c, nc = nc, c
+    states = c.copy()
     return states
-
 
 def create_sequences_for_pretrain(states, seq_length, k):
     """
@@ -137,7 +228,7 @@ class CustomGPT2Model(nn.Module):
         for i in range(self.config.n_layer):
             out = self.gpt2[i](hidden_states, attention_mask=attention_mask, output_attentions=output_attentions)
             hidden_states = out[0]
-            attentions.append(out[1])
+            attentions.append(out[0])
         hidden_states = self.ln_f(hidden_states)
 
         logits = self.output_layer(hidden_states)
