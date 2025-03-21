@@ -45,7 +45,6 @@ nc = np.zeros([width, width], dtype = "uint8")
 
 def number_of_upper_neighbors(x, y):
     upper_count = 0
-    c = np.zeros([width, width], dtype = "uint8")
     for dx in range(-1, 2):
         upper_count += c[(x + dx) % width, (y + 1) % width]
         # print upper_count
@@ -56,7 +55,6 @@ def number_of_upper_neighbors(x, y):
 
 def number_of_lower_neighbors(x, y):
     lower_count = 0
-    c = np.zeros([width, width], dtype = "uint8")
     for dx in range(-1, 2):
         lower_count += c[(x + dx) % width, (y - 1) % width]
         # print lower_count
@@ -67,7 +65,6 @@ def number_of_lower_neighbors(x, y):
 
 def number_of_right_neighbors(x, y):
     right_count = 0
-    c = np.zeros([width, width], dtype = "uint8")
     for dy in range(-1, 2):
         right_count += c[(x + 1) % width, (y + dy) % width]
         # print right_count
@@ -78,7 +75,6 @@ def number_of_right_neighbors(x, y):
 
 def number_of_left_neighbors(x, y):
     left_count = 0
-    c = np.zeros([width, width], dtype = "uint8")
     for dy in range(-1, 2):
         left_count += c[(x - 1) % width, (y + dy) % width]
         # print left_count
@@ -90,7 +86,6 @@ def number_of_left_neighbors(x, y):
 def number_of_Neumann_neighbors(x, y):
     Vertical_count = 0
     Horizontal_count = 0
-    c = np.zeros([width, width], dtype = "uint8")
     for dy in range(-1, 2):
         Vertical_count += c[x, (y + dy) % width]
         # print Vertical_count
@@ -104,7 +99,6 @@ def number_of_Neumann_neighbors(x, y):
 
 def number_of_Moore_neighbors(x, y):
     Moore_count = 0
-    c = np.zeros([width, width], dtype = "uint8")
     for dx in range(-1, 2):
         for dy in range(-1, 2):
             Moore_count += c[(x + dx) % width, (y + dy) % width]
