@@ -34,7 +34,9 @@ def get_lr_scheduler(optimizer, warmup_steps, total_steps, decrease_mode='cosin'
 
 #initialize the cellular automaton
 
-p = float(0.5 + (1 / (2 * np.sqrt(2))))
+p = 1/(1+np.exp(-1/np.sqrt(2))) # sigmoid of sigmoid of 2 * Ising critical temperature 
+#p = float(0.5 + (1 / (2 * np.sqrt(2))))
+#p = np.log(1 + np.sqrt(2)) / 2 # Ising critical temperature 
 width = 1000
 c = np.zeros([width, width], dtype = "uint8")
 for x in range(width):
@@ -155,7 +157,6 @@ def cellular_automaton(rule, width=1000, init='random', steps=100, k=1):
                         nc[(x - 1) % width, y] = 1
                     else:
                         nc[x, y] = 1
-    print(len(array1))
     c, nc = nc, c
     states = c.copy()
     return states
